@@ -1,0 +1,42 @@
+quarkus:
+  http:
+    test-port: 0
+  datasource:
+    db-kind: postgresql
+    jdbc:
+      url: jdbc:${quarkus.datasource.db-kind}://${quarkus.datasource.host}:${quarkus.datasource.port:5432}/${quarkus.datasource.db-name}
+      max-size: 8
+  hibernate-orm:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+"%dev":
+  quarkus:
+    datasource:
+      devservices:
+        enabled: true
+        image-name: postgres@sha256:5ea2da1f0275e38a6f39735b48a3688aae6ddfa2ad15971722d6fc0f2152918b
+        db-name: ${quarkus.datasource.db-name}
+        username: ${quarkus.datasource.username}
+        password: ${quarkus.datasource.password}
+        port: ${quarkus.datasource.port}
+      username: app
+      password: app
+      host: localhost
+      port: 5432
+      db-name: app
+    flyway:
+      migrate-at-start: true
+      baseline-on-migrate: true
+      locations:
+        - db/migration
+"%test":
+  quarkus:
+    datasource:
+      username: app
+      password: app
+      db-name: app
+    flyway:
+      migrate-at-start: true
+      baseline-on-migrate: true
+      locations:
+        - db/migration
+        - db/testdata
