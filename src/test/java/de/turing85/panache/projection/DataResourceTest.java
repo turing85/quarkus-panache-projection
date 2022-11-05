@@ -30,7 +30,7 @@ class DataResourceTest {
   void createAndDelete() {
     Data newData = postNewData();
     verifyDataIsPresent(newData);
-    deleteById(newData.getId());
+    deleteById(newData.getMyId());
     verifyDataIsAbsent(newData);
   }
 
@@ -50,7 +50,7 @@ class DataResourceTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .extract().body().as(Data.class);
     // @formatter:on
-    assertThat(actual.getId()).isNotNull();
+    assertThat(actual.getMyId()).isNotNull();
     assertThat(actual.getName()).isEqualTo(expectedName);
     return actual;
   }
@@ -100,7 +100,7 @@ class DataResourceTest {
   @DisplayName("get all data")
   void testGetAll() {
     // GIVEN
-    List<Data> expected = TEST_DATA.stream().sorted(Comparator.comparing(Data::getId)).toList();
+    List<Data> expected = TEST_DATA.stream().sorted(Comparator.comparing(Data::getMyId)).toList();
 
     // WHEN
     // @formatter:off
@@ -118,7 +118,7 @@ class DataResourceTest {
   @DisplayName("get all ids")
   void testGetAllIds() {
     // GIVEN
-    List<Long> expected = TEST_DATA.stream().map(Data::getId).sorted().toList();
+    List<Long> expected = TEST_DATA.stream().map(Data::getMyId).sorted().toList();
 
     // WHEN
     // @formatter:off

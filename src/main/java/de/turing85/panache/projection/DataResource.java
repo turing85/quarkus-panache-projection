@@ -27,13 +27,13 @@ public class DataResource {
 
   @GET
   public List<Data> findAll() {
-    return Data.listAll(Sort.by("id"));
+    return Data.listAll(Sort.by("myId"));
   }
 
   @GET
   @Path("ids")
   public List<Long> findAllIds() {
-    return Data.find("SELECT DISTINCT d.id FROM Data d", Sort.by("id"))
+    return Data.find("SELECT DISTINCT d.myId FROM Data d", Sort.by("myId"))
         .project(Long.class)
         .list();
   }

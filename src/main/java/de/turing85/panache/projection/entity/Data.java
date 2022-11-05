@@ -31,7 +31,7 @@ public class Data extends PanacheEntityBase {
       allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DataIdGenerator")
   @Column(name = "id")
-  private Long id;
+  private Long myId;
 
   @Column(name = "name")
   private String name;
@@ -45,8 +45,8 @@ public class Data extends PanacheEntityBase {
       return false;
     }
     Data that = (Data) thatObject;
-    Long thisId = this.getId();
-    Long thatId = that.getId();
+    Long thisId = this.getMyId();
+    Long thatId = that.getMyId();
     if (Objects.nonNull(thisId) && Objects.nonNull(thatId)) {
       return Objects.equals(thisId, thatId);
     }
@@ -55,6 +55,6 @@ public class Data extends PanacheEntityBase {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(myId, name);
   }
 }
