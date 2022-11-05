@@ -5,10 +5,7 @@ import java.util.Map;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class PostgresContainerTestResource implements QuarkusTestResourceLifecycleManager {
-  private final PostgreSQLContainer<?> postgresContainer;
-  private final String username;
-  private final String password;
-  private final String databaseName;
+  private final PostgreSQLContainer<?> container;
 
   @SuppressWarnings("unused")
   public PostgresContainerTestResource() {
@@ -19,12 +16,12 @@ public class PostgresContainerTestResource implements QuarkusTestResourceLifecyc
         "app");
   }
 
-  public PostgresContainerTestResource(String imageName, String username,
-                                       String password, String databaseName) {
-    this.username = username;
-    this.password = password;
-    this.databaseName = databaseName;
-    this.postgresContainer = new PostgreSQLContainer<>(imageName)
+  private PostgresContainerTestResource(
+      String imageName,
+      String username,
+      String password,
+      String databaseName) {
+    this.container = new PostgreSQLContainer<>(imageName)
         .withUsername(username)
         .withPassword(password)
         .withDatabaseName(databaseName);
@@ -32,17 +29,17 @@ public class PostgresContainerTestResource implements QuarkusTestResourceLifecyc
 
   @Override
   public Map<String, String> start() {
-    postgresContainer.start();
+    container.start();
     return Map.of(
-        "quarkus.datasource.jdbc.url", postgresContainer.getJdbcUrl(),
-        "quarkus.datasource.username", username,
-        "quarkus.datasource.password", password,
-        "quarkus.datasource.db-name", databaseName);
+        "quarkus.datasource.jdbc.url", container.getJdbcUrl(),
+        "quarkus.datasource.username", container.getUsername(),
+        "quarkus.datasource.password", container.getPassword(),
+        "quarkus.datasource.db-name", container.getDatabaseName());
   }
 
   @Override
   public void stop() {
-    postgresContainer.stop();
-    postgresContainer.close();
+    container.stop();
+    container.close();
   }
 }

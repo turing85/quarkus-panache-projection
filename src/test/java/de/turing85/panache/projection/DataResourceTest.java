@@ -2,6 +2,7 @@ package de.turing85.panache.projection;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 
 import de.turing85.panache.projection.entity.Data;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -11,18 +12,21 @@ import java.util.Comparator;
 import java.util.List;
 import javax.ws.rs.core.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @QuarkusTestResource(PostgresContainerTestResource.class)
 @TestHTTPEndpoint(DataResource.class)
+@DisplayName("Data endpoints")
 class DataResourceTest {
-  public static final List<Data> TEST_DATA = List.of(
+  private static final List<Data> TEST_DATA = List.of(
       new Data(0L, "foo"),
       new Data(1L, "bar"),
       new Data(2L, "baz"));
 
   @Test
+  @DisplayName("post new data, then delete it")
   void createAndDelete() {
     Data newData = postNewData();
     verifyDataIsPresent(newData);
@@ -31,112 +35,100 @@ class DataResourceTest {
   }
 
   private static Data postNewData() {
-    // @formatter:off
     // GIVEN
     String expectedName = "expectedName";
+    // @formatter:off
     Data actual = given()
         .contentType(ContentType.APPLICATION_JSON.getMimeType())
         .body(expectedName)
 
     // WHEN
-        .when()
-            .post()
+        .when().post()
 
     // THEN
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .extract().body().as(Data.class);
+    // @formatter:on
     assertThat(actual.getId()).isNotNull();
     assertThat(actual.getName()).isEqualTo(expectedName);
     return actual;
-    // @formatter:on
   }
 
   private static void verifyDataIsPresent(Data actual) {
-    // @formatter:off
-    // GIVEN
-    List<Data> all = given()
     // WHEN
-        .when()
-            .get()
+    // @formatter:off
+    List<Data> all = when().get()
 
     // THEN
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .extract()
                 .body().jsonPath().getList(".", Data.class);
-    assertThat(all).contains(actual);
     // @formatter:on
+    assertThat(all).contains(actual);
   }
 
   private static void deleteById(long id) {
-    // @formatter:off
     // GIVEN
+    // @formatter:off
     given()
         .pathParam("id", id)
 
     // WHEN
-        .when()
-            .delete("{id}")
+        .when().delete("{id}")
 
     // THEN
-        .then()
-            .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+        .then().statusCode(Response.Status.NO_CONTENT.getStatusCode());
     // @formatter:on
   }
 
   private static void verifyDataIsAbsent(Data actual) {
-    // @formatter:off
-    // GIVEN
-    List<Data> all = given()
-
     // WHEN
-        .when()
-            .get()
-
-        // THEN
-        .then()
-            .statusCode(Response.Status.OK.getStatusCode())
-            .extract().body().jsonPath().getList(".", Data.class);
-    assertThat(all).doesNotContain(actual);
-    // @formatter:on
-  }
-
-  @Test
-  void testGetAll() {
     // @formatter:off
-    // GIVEN
-    List<Data> expected = TEST_DATA.stream().sorted(Comparator.comparing(Data::getId)).toList();
-    List<Data> actual = given()
-
-    // WHEN
-        .when()
-            .get()
+    List<Data> all = when().get()
 
     // THEN
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .extract().body().jsonPath().getList(".", Data.class);
-    assertThat(actual).isEqualTo(expected);
     // @formatter:on
+    assertThat(all).doesNotContain(actual);
   }
 
   @Test
-  void testGetAllIds() {
-    // @formatter:off
+  @DisplayName("get all data")
+  void testGetAll() {
     // GIVEN
-    List<Long> expected = TEST_DATA.stream().map(Data::getId).sorted().toList();
-    List<Long> actual = given()
+    List<Data> expected = TEST_DATA.stream().sorted(Comparator.comparing(Data::getId)).toList();
 
     // WHEN
-        .when()
-            .get("ids")
+    // @formatter:off
+    List<Data> actual = when().get()
+
+    // THEN
+        .then()
+            .statusCode(Response.Status.OK.getStatusCode())
+            .extract().body().jsonPath().getList(".", Data.class);
+    // @formatter:on
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  @DisplayName("get all ids")
+  void testGetAllIds() {
+    // GIVEN
+    List<Long> expected = TEST_DATA.stream().map(Data::getId).sorted().toList();
+
+    // WHEN
+    // @formatter:off
+    List<Long> actual = when().get("ids")
 
     // THEN
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .extract().body().jsonPath().getList(".", Long.class);
-    assertThat(actual).isEqualTo(expected);
     // @formatter:on
+    assertThat(actual).isEqualTo(expected);
   }
 }
