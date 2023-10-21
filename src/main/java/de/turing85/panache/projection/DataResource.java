@@ -2,16 +2,16 @@ package de.turing85.panache.projection;
 
 import de.turing85.panache.projection.entity.Data;
 import io.quarkus.panache.common.Sort;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
-import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 @Path("data")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -32,6 +32,7 @@ public class DataResource {
 
   @GET
   @Path("ids")
+  @Transactional
   public List<Long> findAllIds() {
     return Data.find("SELECT DISTINCT d.id FROM Data d", Sort.by("id"))
         .project(Long.class)

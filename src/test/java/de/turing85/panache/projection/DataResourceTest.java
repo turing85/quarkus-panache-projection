@@ -5,18 +5,16 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 
 import de.turing85.panache.projection.entity.Data;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.Comparator;
 import java.util.List;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-@QuarkusTestResource(PostgresContainerTestResource.class)
 @TestHTTPEndpoint(DataResource.class)
 @DisplayName("Data endpoints")
 class DataResourceTest {

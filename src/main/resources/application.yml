@@ -31,9 +31,18 @@ quarkus:
 "%test":
   quarkus:
     datasource:
+      devservices:
+        enabled: true
+        image-name: postgres@sha256:5ea2da1f0275e38a6f39735b48a3688aae6ddfa2ad15971722d6fc0f2152918b
+        db-name: ${quarkus.datasource.db-name}
+        username: ${quarkus.datasource.username}
+        password: ${quarkus.datasource.password}
+        port: ${quarkus.datasource.port}
       username: app
       password: app
+      host: localhost
       db-name: app
+      port: 5432
     flyway:
       migrate-at-start: true
       baseline-on-migrate: true
